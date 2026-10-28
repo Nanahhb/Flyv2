@@ -1,0 +1,367 @@
+
+-- NANAHHB 🎀 FLY HUB
+-- Roblox Studio | PC + Mobile | Không có ESP
+
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local old = playerGui:FindFirstChild("NanahhbFlyHub")
+if old then old:Destroy() end
+
+local PINK = Color3.fromRGB(255, 190, 220)
+local LIGHT = Color3.fromRGB(255, 225, 238)
+local DEEP = Color3.fromRGB(225, 105, 160)
+local TEXT = Color3.fromRGB(155, 65, 105)
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "NanahhbFlyHub"
+gui.ResetOnSpawn = false
+gui.Parent = playerGui
+
+local function round(obj, radius)
+    local c = Instance.new("UICorner")
+    c.CornerRadius = UDim.new(0, radius)
+    c.Parent = obj
+end
+
+local function button(parent, name, label, size, pos)
+    local b = Instance.new("TextButton")
+    b.Name = name
+    b.Text = label
+    b.Size = size
+    b.Position = pos
+    b.BackgroundColor3 = PINK
+    b.TextColor3 = TEXT
+    b.Font = Enum.Font.GothamBold
+    b.TextSize = 16
+    b.Parent = parent
+    round(b, 14)
+    return b
+end
+
+-- Nút menu riêng 🌸
+local menuToggle = button(
+    gui, "MenuToggle", "🌸",
+    UDim2.fromOffset(58, 58),
+    UDim2.new(0, 18, 0.38, 0)
+)
+menuToggle.TextSize = 27
+
+-- Nút Fly riêng 💗
+local floatingFly = button(
+    gui, "FloatingFly", "FLY",
+    UDim2.fromOffset(58, 58),
+    UDim2.new(0, 18, 0.52, 0)
+)
+
+local outline = Instance.new("UIStroke")
+outline.Color = DEEP
+outline.Thickness = 2
+outline.Parent = floatingFly
+
+-- Menu chính
+local menu = Instance.new("Frame")
+menu.Name = "MainMenu"
+menu.Size = UDim2.fromOffset(280, 245)
+menu.Position = UDim2.new(0.5, -140, 0.5, -122)
+menu.BackgroundColor3 = LIGHT
+menu.BorderSizePixel = 0
+menu.Parent = gui
+round(menu, 18)
+
+local border = Instance.new("UIStroke")
+border.Color = DEEP
+border.Thickness = 2
+border.Parent = menu
+
+local title = Instance.new("TextLabel")
+title.Name = "Title"
+title.Size = UDim2.new(1, -50, 0, 45)
+title.Position = UDim2.fromOffset(10, 4)
+title.BackgroundTransparency = 1
+title.Text = "🎀 Nanahhb"
+title.TextColor3 = TEXT
+title.TextSize = 22
+title.Font = Enum.Font.GothamBold
+title.Parent = menu
+title.Active = true
+
+local close = button(
+    menu, "Close", "×",
+    UDim2.fromOffset(34, 34),
+    UDim2.new(1, -42, 0, 7)
+)
+close.TextSize = 23
+
+local subtitle = Instance.new("TextLabel")
+subtitle.Size = UDim2.new(1, -20, 0, 25)
+subtitle.Position = UDim2.fromOffset(10, 45)
+subtitle.BackgroundTransparency = 1
+subtitle.Text = "PASTEL FLY SYSTEM 🌸"
+subtitle.TextColor3 = DEEP
+subtitle.TextSize = 12
+subtitle.Font = Enum.Font.GothamBold
+subtitle.Parent = menu
+
+local flyButton = button(
+    menu, "FlyButton", "✈ FLY: OFF",
+    UDim2.new(1, -24, 0, 43),
+    UDim2.fromOffset(12, 75)
+)
+
+local speed = 50
+
+local speedLabel = Instance.new("TextLabel")
+speedLabel.Size = UDim2.fromOffset(130, 35)
+speedLabel.Position = UDim2.fromOffset(75, 130)
+speedLabel.BackgroundTransparency = 1
+speedLabel.Text = "Speed: 50"
+speedLabel.TextColor3 = TEXT
+speedLabel.TextSize = 16
+speedLabel.Font = Enum.Font.GothamBold
+speedLabel.Parent = menu
+
+local minus = button(
+    menu, "Minus", "−",
+    UDim2.fromOffset(48, 35),
+    UDim2.fromOffset(18, 130)
+)
+
+local plus = button(
+    menu, "Plus", "+",
+    UDim2.fromOffset(48, 35),
+    UDim2.new(1, -66, 0, 130)
+)
+
+local help = Instance.new("TextLabel")
+help.Size = UDim2.new(1, -20, 0, 55)
+help.Position = UDim2.fromOffset(10, 177)
+help.BackgroundTransparency = 1
+help.Text = "PC: WASD + Space/Ctrl\nMobile: joystick + ▲/▼"
+help.TextColor3 = TEXT
+help.TextSize = 12
+help.Font = Enum.Font.Gotham
+help.Parent = menu
+
+-- Kéo thả nút và menu
+local function makeDraggable(object, handle)
+    local dragging = false
+    local dragStart, originalPosition
+    local activeInput
+
+    handle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+            or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            activeInput = input
+            dragStart = input.Position
+            originalPosition = object.Position
+        end
+    end)
+
+    UIS.InputChanged:Connect(function(input)
+        if not dragging then return end
+
+        if input == activeInput
+            or input.UserInputType == Enum.UserInputType.MouseMovement
+            or input.UserInputType == Enum.UserInputType.Touch then
+            local delta = input.Position - dragStart
+            object.Position = UDim2.new(
+                originalPosition.X.Scale,
+                originalPosition.X.Offset + delta.X,
+                originalPosition.Y.Scale,
+                originalPosition.Y.Offset + delta.Y
+            )
+        end
+    end)
+
+    UIS.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+            or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = false
+            activeInput = nil
+        end
+    end)
+end
+
+makeDraggable(menu, title)
+makeDraggable(menuToggle, menuToggle)
+makeDraggable(floatingFly, floatingFly)
+
+menuToggle.Activated:Connect(function()
+    menu.Visible = not menu.Visible
+end)
+
+close.Activated:Connect(function()
+    menu.Visible = false
+end)
+
+plus.Activated:Connect(function()
+    speed = math.min(speed + 10, 150)
+    speedLabel.Text = "Speed: " .. speed
+end)
+
+minus.Activated:Connect(function()
+    speed = math.max(speed - 10, 10)
+    speedLabel.Text = "Speed: " .. speed
+end)
+
+-- Nút lên / xuống cho mobile
+local up = button(
+    gui, "FlyUp", "▲",
+    UDim2.fromOffset(52, 48),
+    UDim2.new(1, -68, 0.55, 0)
+)
+
+local down = button(
+    gui, "FlyDown", "▼",
+    UDim2.fromOffset(52, 48),
+    UDim2.new(1, -68, 0.55, 54)
+)
+
+up.Visible = false
+down.Visible = false
+
+local flying = false
+local upHeld, downHeld = false, false
+local attachment, velocity, orientation
+local flyConnection
+
+local function updateButtons()
+    flyButton.Text = flying and "✈ FLY: ON" or "✈ FLY: OFF"
+    flyButton.BackgroundColor3 = flying and DEEP or PINK
+
+    floatingFly.Text = flying and "ON" or "FLY"
+    floatingFly.BackgroundColor3 = flying and DEEP or PINK
+
+    up.Visible = flying and UIS.TouchEnabled
+    down.Visible = flying and UIS.TouchEnabled
+end
+
+local function stopFly()
+    flying = false
+
+    if flyConnection then
+        flyConnection:Disconnect()
+        flyConnection = nil
+    end
+
+    if velocity then velocity:Destroy(); velocity = nil end
+    if orientation then orientation:Destroy(); orientation = nil end
+    if attachment then attachment:Destroy(); attachment = nil end
+
+    local char = player.Character
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+
+    if hum then
+        hum.PlatformStand = false
+        hum:ChangeState(Enum.HumanoidStateType.GettingUp)
+    end
+
+    updateButtons()
+end
+
+local function startFly()
+    if flying then return end
+
+    local char = player.Character
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+    local root = char and char:FindFirstChild("HumanoidRootPart")
+
+    if not hum or not root then return end
+
+    flying = true
+    hum.PlatformStand = true
+
+    attachment = Instance.new("Attachment")
+    attachment.Parent = root
+
+    velocity = Instance.new("LinearVelocity")
+    velocity.Attachment0 = attachment
+    velocity.RelativeTo = Enum.ActuatorRelativeTo.World
+    velocity.MaxForce = 100000
+    velocity.VectorVelocity = Vector3.zero
+    velocity.Parent = root
+
+    orientation = Instance.new("AlignOrientation")
+    orientation.Attachment0 = attachment
+    orientation.Mode = Enum.OrientationAlignmentMode.OneAttachment
+    orientation.MaxTorque = 100000
+    orientation.Responsiveness = 15
+    orientation.Parent = root
+
+    updateButtons()
+
+    flyConnection = RunService.RenderStepped:Connect(function()
+        if not flying or not root.Parent or hum.Health <= 0 then
+            stopFly()
+            return
+        end
+
+        local vertical = 0
+
+        if UIS:IsKeyDown(Enum.KeyCode.Space) or upHeld then
+            vertical += 1
+        end
+
+        if UIS:IsKeyDown(Enum.KeyCode.LeftControl)
+            or UIS:IsKeyDown(Enum.KeyCode.C) or downHeld then
+            vertical -= 1
+        end
+
+        velocity.VectorVelocity =
+            hum.MoveDirection * speed + Vector3.new(0, vertical * speed, 0)
+
+        local camera = workspace.CurrentCamera
+        if camera then
+            local look = camera.CFrame.LookVector
+            if Vector3.new(look.X, 0, look.Z).Magnitude > 0.01 then
+                orientation.CFrame = CFrame.lookAt(
+                    Vector3.zero,
+                    Vector3.new(look.X, 0, look.Z)
+                )
+            end
+        end
+    end)
+end
+
+local function toggleFly()
+    if flying then
+        stopFly()
+    else
+        startFly()
+    end
+end
+
+-- Hai nút FLY dùng chung một trạng thái
+flyButton.Activated:Connect(toggleFly)
+floatingFly.Activated:Connect(toggleFly)
+
+local function holdButton(btn, setter)
+    btn.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch
+            or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            setter(true)
+        end
+    end)
+
+    btn.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch
+            or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            setter(false)
+        end
+    end)
+end
+
+holdButton(up, function(value) upHeld = value end)
+holdButton(down, function(value) downHeld = value end)
+
+player.CharacterAdded:Connect(function()
+    stopFly()
+end)
+
+print("Nanahhb Fly Hub loaded!")
